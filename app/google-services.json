@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "222063739413",
+    "firebase_url": "https://chatapplication-ecf01-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "chatapplication-ecf01",
+    "storage_bucket": "chatapplication-ecf01.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:222063739413:android:b7cafc94b0a0ed989c841c",
+        "android_client_info": {
+          "package_name": "com.emreoksuz.chatapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRaRj8YB-26pTm1LbtJ1LjHg2slun-V3U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
