@@ -11,7 +11,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -23,13 +25,34 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
 import java.io.IOException;
+import java.util.UUID;
 
 public class ShareActivity extends AppCompatActivity {
 
 
     Uri selected;
     ImageView shareimageView;
+    EditText nameText;
+    EditText surnameText;
+    ImageView userImageView;
+
+
+    private FirebaseDatabase database;
+    private DatabaseReference databaseReference;
+    private StorageReference storageReference;
+    private FirebaseAuth mAuth;
+
 
 
     @Override
@@ -39,11 +62,66 @@ public class ShareActivity extends AppCompatActivity {
 
         shareimageView = findViewById(R.id.shareimageView);
 
+
+
+        database= FirebaseDatabase.getInstance();
+        databaseReference = database.getReference();
+        storageReference = FirebaseStorage.getInstance().getReference();
+        mAuth = FirebaseAuth.getInstance();
+
     }
 
     public void shareUpload(View view){
-        
+        final UUID uuidImage = UUID.randomUUID();
+
+        String imageName = "images/"+uuidImage+".jpg";
+
+        StorageReference newReference = storageReference.child(imageName);
+
+        newReference.putFile(selected).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                StorageReference profileImageRef = FirebaseStorage.getInstance().getReference("images/"+uuidImage+".jpg");
+                profileImageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        String downloadURL=uri.toString();
+
+
+
+
+                        UUID uuid = UUID.randomUUID();
+                        String uuidString=uuid.toString();
+
+
+
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        String useremail = user.getEmail().toString();
+
+                        databaseReference.child("Shares").child(uuidString).child("userimageurl").setValue(downloadURL);
+
+                        databaseReference.child("Shares").child(uuidString).child("useremail").setValue(useremail);
+
+
+                        Toast.makeText(getApplicationContext(),"Uploaded!",Toast.LENGTH_LONG).show();
+
+
+
+                    }
+                });
+
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getApplicationContext(),e.getLocalizedMessage(),Toast.LENGTH_LONG).show();
+            }
+        });
+
     }
+
 
 
     @Override
